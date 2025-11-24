@@ -81,7 +81,7 @@ function displayWishlistItems() {
                 <div class="product-info">
                     <h3 class="product-name">${item.name}</h3>
                     <div class="product-price">
-                        <span class="current-price">$${item.price.toFixed(2)}</span>
+                        <span class="current-price">Ksh. ${item.price.toFixed(2)}</span>
                     </div>
                     <div class="product-actions">
                         <button onclick="addToCart(${item.id}, '${item.name}', ${item.price}, '${item.image}')" class="btn btn-primary">Add to Cart</button>
