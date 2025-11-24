@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="product-detail-section">
+    <div class="container">
+        <div class="product-detail-layout">
+            <div class="product-images">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-product-image">
+                {% else %}
+                <div class="placeholder-image-large">{{ product.name|slice:":1" }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="product-details">
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-category-tag">{{ product.category.name }}</p>
+                
+                <div class="product-price-detail">
+                    <span class="current-price">${{ product.price }}</span>
+                    {% if product.original_price %}
+                    <span class="original-price">${{ product.original_price }}</span>
+                    <span class="savings">Save ${{ product.original_price|floatformat:2|add:"-"|add:product.price|floatformat:2 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-description">
+                    <h3>Description</h3>
+                    <p>{{ product.description }}</p>
+                </div>
+                
+                <div class="product-stock">
+                    {% if product.stock > 0 %}
+                    <span class="in-stock">In Stock ({{ product.stock }} available)</span>
+                    {% else %}
+                    <span class="out-of-stock">Out of Stock</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-actions-detail">
+                    <div class="quantity-selector">
+                        <button onclick="decrementQuantity()" class="quantity-btn">-</button>
+                        <input type="number" id="quantity" value="1" min="1" max="{{ product.stock }}" readonly>
+                        <button onclick="incrementQuantity({{ product.stock }})" class="quantity-btn">+</button>
+                    </div>
+                    <button onclick="addToCartWithQuantity({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{% if product.image %}{{ product.image.url }}{% endif %}')" class="btn btn-primary btn-large">Add to Cart</button>
+                    <button onclick="toggleWishlist({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{% if product.image %}{{ product.image.url }}{% endif %}')" class="btn btn-secondary">Add to Wishlist</button>
+                </div>
+            </div>
+        </div>
+        
+        {% if related_products %}
+        <div class="related-products">
+            <h2>Related Products</h2>
+            <div class="products-grid">
+                {% for product in related_products %}
+                <article class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="placeholder-image">{{ product.name|slice:":1" }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <div class="product-price">
+                            <span class="current-price">${{ product.price }}</span>
+                        </div>
+                        <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-secondary">View Details</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+function incrementQuantity(max) {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) < max) {
+        input.value = parseInt(input.value) + 1;
+    }
+}
+
+function decrementQuantity() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+function addToCartWithQuantity(id, name, price, image) {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    addToCart(id, name, price, image, quantity);
+}
+</script>
+{% endblock %}

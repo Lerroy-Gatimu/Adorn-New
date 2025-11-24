@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'shop',
-    'pages',
+    'adorn_jewellery.shop',
+    'adorn_jewellery.pages',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Shop</h1>
+        <p>Discover our collection of elegant and affordable jewelry</p>
+    </div>
+</section>
+
+<section class="shop-section">
+    <div class="container">
+        <div class="shop-layout">
+            <aside class="shop-sidebar">
+                <div class="filter-section">
+                    <h3>Categories</h3>
+                    <ul class="category-list">
+                        <li><a href="{% url 'shop:shop' %}" class="{% if not request.GET.category %}active{% endif %}">All Products</a></li>
+                        {% for category in categories %}
+                        <li><a href="?category={{ category.slug }}" class="{% if request.GET.category == category.slug %}active{% endif %}">{{ category.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="filter-section">
+                    <h3>Price Range</h3>
+                    <form method="get" class="price-filter">
+                        {% if request.GET.category %}
+                        <input type="hidden" name="category" value="{{ request.GET.category }}">
+                        {% endif %}
+                        <div class="price-inputs">
+                            <input type="number" name="min_price" placeholder="Min" value="{{ request.GET.min_price }}">
+                            <span>-</span>
+                            <input type="number" name="max_price" placeholder="Max" value="{{ request.GET.max_price }}">
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Filter</button>
+                    </form>
+                </div>
+                
+                <div class="filter-section">
+                    <h3>Sort By</h3>
+                    <select onchange="window.location.href='?sort=' + this.value + '{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}'" class="sort-select">
+                        <option value="">Default</option>
+                        <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest</option>
+                    </select>
+                </div>
+            </aside>
+            
+            <div class="shop-products">
+                <div class="products-grid">
+                    {% for product in products %}
+                    <article class="product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            {% else %}
+                            <div class="placeholder-image">{{ product.name|slice:":1" }}</div>
+                            {% endif %}
+                            {% if product.discount_percentage > 0 %}
+                            <span class="discount-badge">-{{ product.discount_percentage }}%</span>
+                            {% endif %}
+                            <button class="wishlist-btn" onclick="toggleWishlist({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{% if product.image %}{{ product.image.url }}{% endif %}')" title="Add to Wishlist">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">{{ product.name }}</h3>
+                            <p class="product-category">{{ product.category.name }}</p>
+                            <div class="product-price">
+                                <span class="current-price">${{ product.price }}</span>
+                                {% if product.original_price %}
+                                <span class="original-price">${{ product.original_price }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="product-actions">
+                                <a href="{% url 'shop:product_detail' product.slug %}" class="btn btn-secondary">View Details</a>
+                                <button onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{% if product.image %}{{ product.image.url }}{% endif %}')" class="btn btn-primary">Add to Cart</button>
+                            </div>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <p class="no-products">No products found matching your criteria.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

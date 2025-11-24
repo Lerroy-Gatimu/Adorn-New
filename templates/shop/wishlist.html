@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wishlist - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>My Wishlist</h1>
+    </div>
+</section>
+
+<section class="wishlist-section">
+    <div class="container">
+        <div id="wishlist-empty" class="empty-state" style="display: none;">
+            <h2>Your wishlist is empty</h2>
+            <p>Save your favorite items for later!</p>
+            <a href="{% url 'shop:shop' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+        
+        <div id="wishlist-content">
+            <div id="wishlist-items-list" class="products-grid"></div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmation - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for your order!</p>
+            <div class="order-details">
+                <h2>Order Number: {{ order.order_number }}</h2>
+                <p><strong>Name:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+                <p><strong>Email:</strong> {{ order.email }}</p>
+                <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+            </div>
+            <p class="confirmation-message">
+                We've received your order and will process it shortly. A confirmation email has been sent to {{ order.email }}.
+            </p>
+            <div class="confirmation-actions">
+                <a href="{% url 'shop:home' %}" class="btn btn-primary">Continue Shopping</a>
+                <a href="{% url 'shop:my_account' %}" class="btn btn-secondary">View My Orders</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+localStorage.removeItem('cart');
+updateCartCount();
+</script>
+{% endblock %}

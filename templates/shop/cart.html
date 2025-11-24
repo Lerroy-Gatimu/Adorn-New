@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Shopping Cart</h1>
+    </div>
+</section>
+
+<section class="cart-section">
+    <div class="container">
+        <div id="cart-empty" class="empty-state" style="display: none;">
+            <h2>Your cart is empty</h2>
+            <p>Add some beautiful jewelry to get started!</p>
+            <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+        
+        <div id="cart-content" class="cart-layout">
+            <div class="cart-items">
+                <h2>Cart Items</h2>
+                <div id="cart-items-list"></div>
+            </div>
+            
+            <div class="cart-summary">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="cart-total">$0.00</span>
+                </div>
+                <a href="{% url 'shop:checkout' %}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                <a href="{% url 'shop:shop' %}" class="btn btn-secondary btn-block">Continue Shopping</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

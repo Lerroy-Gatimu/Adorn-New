@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Checkout</h1>
+    </div>
+</section>
+
+<section class="checkout-section">
+    <div class="container">
+        <div class="checkout-layout">
+            <div class="checkout-form">
+                <h2>Shipping Information</h2>
+                <form method="post" id="checkout-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="cart_data" id="cart_data">
+                    <input type="hidden" name="total_amount" id="total_amount">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name">First Name *</label>
+                            <input type="text" name="first_name" id="first_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name">Last Name *</label>
+                            <input type="text" name="last_name" id="last_name" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" name="email" id="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone *</label>
+                        <input type="tel" name="phone" id="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Address *</label>
+                        <input type="text" name="address" id="address" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" name="city" id="city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State *</label>
+                            <input type="text" name="state" id="state" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="postal_code">Postal Code *</label>
+                            <input type="text" name="postal_code" id="postal_code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country *</label>
+                            <input type="text" name="country" id="country" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Order Notes (Optional)</label>
+                        <textarea name="notes" id="notes" rows="3"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">Place Order</button>
+                </form>
+            </div>
+            
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div id="checkout-items-list"></div>
+                <div class="summary-totals">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="checkout-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span id="checkout-total">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    displayCheckoutSummary();
+    
+    document.getElementById('checkout-form').addEventListener('submit', function(e) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) {
+            e.preventDefault();
+            alert('Your cart is empty!');
+            window.location.href = '{% url "shop:shop" %}';
+            return;
+        }
+        
+        document.getElementById('cart_data').value = JSON.stringify(cart);
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('total_amount').value = total.toFixed(2);
+    });
+});
+
+function displayCheckoutSummary() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const itemsList = document.getElementById('checkout-items-list');
+    
+    if (cart.length === 0) {
+        window.location.href = '{% url "shop:cart" %}';
+        return;
+    }
+    
+    let html = '<div class="checkout-items">';
+    let total = 0;
+    
+    cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        html += `
+            <div class="checkout-item">
+                <div class="checkout-item-info">
+                    <h4>${item.name}</h4>
+                    <p>Quantity: ${item.quantity}</p>
+                </div>
+                <div class="checkout-item-price">$${subtotal.toFixed(2)}</div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    itemsList.innerHTML = html;
+    document.getElementById('checkout-subtotal').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('checkout-total').textContent = `$${total.toFixed(2)}`;
+}
+</script>
+{% endblock %}
