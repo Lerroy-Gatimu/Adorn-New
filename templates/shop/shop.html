@@ -74,9 +74,9 @@
                             <h3 class="product-name">{{ product.name }}</h3>
                             <p class="product-category">{{ product.category.name }}</p>
                             <div class="product-price">
-                                <span class="current-price">${{ product.price }}</span>
+                                <span class="current-price">Ksh. {{ product.price }}</span>
                                 {% if product.original_price %}
-                                <span class="original-price">${{ product.original_price }}</span>
+                                <span class="original-price">Ksh. {{ product.original_price }}</span>
                                 {% endif %}
                             </div>
                             <div class="product-actions">

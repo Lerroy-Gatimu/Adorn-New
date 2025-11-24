@@ -14,9 +14,9 @@
             <nav class="navbar">
                 <div class="logo">
                     <a href="{% url 'shop:home' %}">
-                        <h1>Adorn</h1>
-                        <p class="logo-tagline">Jewellery</p>
+                       <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50" >
                     </a>
+
                 </div>
                 
                 <div class="nav-links">
@@ -77,8 +77,9 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <h2>Adorn</h2>
-                        <p class="footer-tagline">Jewellery</p>
+                        <a href="{% url 'shop:home' %}">
+                            <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50" >
+                        </a>
                     </div>
                     <p class="footer-motto">Distinctively Elegant, Affordable, Unique</p>
                 </div>
