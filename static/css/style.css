@@ -5,15 +5,27 @@
 }
 
 :root {
-    --primary-color: #ffca91;
-    --secondary-color: #1a1a1a;
-    --text-color: #333;
-    --light-bg: #f8f8f8;
-    --white: #ffffff;
-    --border-color: #e0e0e0;
-    --success-color: #2ecc71;
-    --danger-color: #e74c3c;
+    /* Primary Gold Tones */
+    --primary-color: #f0d59f;      /* light champagne gold */
+    --secondary-color: #c4a970;    /* soft brushed gold */
+    --accent-color: #F4E9D2;       /* pale warm gold */
+
+    /* Text & Backgrounds */
+    --text-color: #2F2A24;         /* soft charcoal brown */
+    --light-bg: #FFFCF7;           /* warm ivory background */
+    --white: #FFFFFF;
+
+    /* Neutrals & Borders */
+    --neutral-color: #F2E6CF;      /* creamy beige gold */
+    --border-color: #E0CFAE;       /* soft gold-beige border */
+
+    /* Status Colors (Luxury Soft Tints) */
+    --success-color: #9AC9A3;      /* refined mint green */
+    --danger-color: #e07a7a;       /* soft rose red */
 }
+
+
+
 
 body {
     font-family: 'Georgia', serif;
@@ -77,7 +89,7 @@ body {
 
 .nav-link:hover,
 .nav-link.active {
-    color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 .nav-icons {
@@ -93,7 +105,7 @@ body {
 }
 
 .icon-link:hover {
-    color: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 .badge {
@@ -132,11 +144,32 @@ body {
 }
 
 .hero {
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-    color: var(--white);
-    padding: 6rem 2rem;
-    text-align: center;
+    /* Gold overlay + image */
+    background-image:
+        linear-gradient(
+            to right,
+            #f4dcac,
+            rgba(250, 186, 122, 0.3)
+        ),
+        url("/static/images/adorn%20choose.jpg");
+
+    background-size: contain;
+    background-position: left center;
+    background-repeat: no-repeat;
+
+    color: #c4a970;
+    padding: 7rem 3rem;
+    min-height: 85vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;     /* <-- moves text to the right */
+    text-align: right;         /* <-- aligns text nicely */
 }
+
+
+
 
 .hero-title {
     font-size: 3rem;
@@ -168,7 +201,7 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: #c5a028;
+    background-color: #c4a970;
     transform: translateY(-2px);
 }
 
@@ -179,7 +212,7 @@ body {
 }
 
 .btn-secondary:hover {
-    background-color: var(--primary-color);
+    background-color: var(--secondary-color);
     color: var(--white);
 }
 
@@ -229,7 +262,7 @@ body {
 }
 
 .category-card h3 {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     margin-bottom: 0.5rem;
 }
 
@@ -330,7 +363,7 @@ body {
 }
 
 .product-category {
-    color: var(--primary-color);
+    color: var(--secondary-color);
     font-size: 0.9rem;
     margin-bottom: 1rem;
 }
@@ -1000,4 +1033,28 @@ body {
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Fix the image wrapper */
+.cart-item-image {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 6px;
+}
+
+/* Fix the image itself */
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }

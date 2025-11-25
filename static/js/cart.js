@@ -89,7 +89,7 @@ function displayCartItems() {
                 </div>
                 <div class="cart-item-info">
                     <h3 class="cart-item-name">${item.name}</h3>
-                    <p class="cart-item-price">Ksh. ${item.price.toFixed(2)}</p>
+                    <p class="cart-item-price">KES. ${item.price.toFixed(2)}</p>
                     <div class="cart-item-actions">
                         <div class="quantity-selector">
                             <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})" class="quantity-btn">-</button>
@@ -100,7 +100,7 @@ function displayCartItems() {
                     </div>
                 </div>
                 <div class="cart-item-subtotal">
-                    <strong>Ksh. ${subtotal.toFixed(2)}</strong>
+                    <strong>KES. ${subtotal.toFixed(2)}</strong>
                 </div>
             </div>
         `;
@@ -111,8 +111,8 @@ function displayCartItems() {
     const subtotalElement = document.getElementById('cart-subtotal');
     const totalElement = document.getElementById('cart-total');
     
-    if (subtotalElement) subtotalElement.textContent = `Ksh. ${total.toFixed(2)}`;
-    if (totalElement) totalElement.textContent = `Ksh. ${total.toFixed(2)}`;
+    if (subtotalElement) subtotalElement.textContent = `KES. ${total.toFixed(2)}`;
+    if (totalElement) totalElement.textContent = `KES. ${total.toFixed(2)}`;
 }
 
 function showNotification(message) {
