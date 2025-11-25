@@ -19,7 +19,7 @@
                 <h2>Order Number: {{ order.order_number }}</h2>
                 <p><strong>Name:</strong> {{ order.first_name }} {{ order.last_name }}</p>
                 <p><strong>Email:</strong> {{ order.email }}</p>
-                <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+                <p><strong>Total Amount:</strong> Kes. {{ order.total_amount }}</p>
             </div>
             <p class="confirmation-message">
                 We've received your order and will process it shortly. A confirmation email has been sent to {{ order.email }}.

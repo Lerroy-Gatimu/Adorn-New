@@ -451,9 +451,10 @@ body {
 
 .price-inputs {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: column;
+    width: max-content;
 }
+
 
 .price-inputs input {
     flex: 1;
