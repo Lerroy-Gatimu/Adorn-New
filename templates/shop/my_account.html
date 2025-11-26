@@ -24,14 +24,14 @@
                     </div>
                     <div class="order-details">
                         <p><strong>Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
-                        <p><strong>Total:</strong> ${{ order.total_amount }}</p>
+                        <p><strong>Total:</strong> KES. {{ order.total_amount }}</p>
                         <p><strong>Items:</strong> {{ order.items.count }}</p>
                     </div>
                     <div class="order-items">
                         {% for item in order.items.all %}
                         <div class="order-item">
                             <span>{{ item.quantity }} x {{ item.product.name }}</span>
-                            <span>${{ item.subtotal }}</span>
+                            <span>KES. {{ item.subtotal }}</span>
                         </div>
                         {% endfor %}
                     </div>

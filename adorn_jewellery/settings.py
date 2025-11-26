@@ -142,5 +142,5 @@ EMAIL_HOST = 'smtp.gmail.com'           # Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'lerroygatimu@gmail.com'   # ← CHANGE THIS
-EMAIL_HOST_PASSWORD = 'nrwe glao dtxs ioss' # ← VERY IMPORTANT (see below)
+EMAIL_HOST_PASSWORD = 'ifvq scer nnww pzgk' # ← VERY IMPORTANT (see below)
 DEFAULT_FROM_EMAIL = 'Adorn Jewellery <lerroygatimu@gmail.com>'
