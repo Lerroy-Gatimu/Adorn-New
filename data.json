@@ -1,0 +1,222 @@
+[
+{
+  "model": "shop.category",
+  "pk": 1,
+  "fields": {
+    "name": "Necklaces",
+    "slug": "necklaces",
+    "description": "Elegant necklaces for every occasion",
+    "created_at": "2025-11-26T13:35:35.433Z"
+  }
+},
+{
+  "model": "shop.category",
+  "pk": 2,
+  "fields": {
+    "name": "Earrings",
+    "slug": "earrings",
+    "description": "Beautiful earrings to complement your style",
+    "created_at": "2025-11-26T13:35:35.444Z"
+  }
+},
+{
+  "model": "shop.category",
+  "pk": 3,
+  "fields": {
+    "name": "Bracelets",
+    "slug": "bracelets",
+    "description": "Stunning bracelets that add elegance",
+    "created_at": "2025-11-26T13:35:35.452Z"
+  }
+},
+{
+  "model": "shop.category",
+  "pk": 4,
+  "fields": {
+    "name": "Rings",
+    "slug": "rings",
+    "description": "Exquisite rings for special moments",
+    "created_at": "2025-11-26T13:35:35.459Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 1,
+  "fields": {
+    "name": "Diamond Pendant Necklace",
+    "slug": "diamond-pendant-necklace",
+    "category": 1,
+    "description": "A stunning diamond pendant necklace that adds elegance to any outfit. Features a brilliant-cut diamond set in 18k gold.",
+    "price": "299.99",
+    "original_price": "399.99",
+    "image": "",
+    "stock": 15,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.476Z",
+    "updated_at": "2025-11-26T13:35:35.476Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 2,
+  "fields": {
+    "name": "Pearl Drop Earrings",
+    "slug": "pearl-drop-earrings",
+    "category": 2,
+    "description": "Classic pearl drop earrings perfect for formal occasions. Made with freshwater pearls and sterling silver.",
+    "price": "89.99",
+    "original_price": "129.99",
+    "image": "",
+    "stock": 25,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.485Z",
+    "updated_at": "2025-11-26T13:35:35.485Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 3,
+  "fields": {
+    "name": "Gold Chain Bracelet",
+    "slug": "gold-chain-bracelet",
+    "category": 3,
+    "description": "Delicate gold chain bracelet that adds a touch of sophistication. Adjustable length for perfect fit.",
+    "price": "149.99",
+    "original_price": null,
+    "image": "",
+    "stock": 20,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.492Z",
+    "updated_at": "2025-11-26T13:35:35.492Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 4,
+  "fields": {
+    "name": "Sapphire Engagement Ring",
+    "slug": "sapphire-engagement-ring",
+    "category": 4,
+    "description": "Beautiful sapphire engagement ring surrounded by diamonds. A timeless symbol of love and commitment.",
+    "price": "1299.99",
+    "original_price": "1599.99",
+    "image": "",
+    "stock": 5,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.496Z",
+    "updated_at": "2025-11-26T13:35:35.496Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 5,
+  "fields": {
+    "name": "Silver Hoop Earrings",
+    "slug": "silver-hoop-earrings",
+    "category": 2,
+    "description": "Modern silver hoop earrings perfect for everyday wear. Lightweight and comfortable.",
+    "price": "49.99",
+    "original_price": null,
+    "image": "",
+    "stock": 30,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.506Z",
+    "updated_at": "2025-11-26T13:35:35.506Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 6,
+  "fields": {
+    "name": "Rose Gold Heart Necklace",
+    "slug": "rose-gold-heart-necklace",
+    "category": 1,
+    "description": "Romantic rose gold heart necklace, perfect gift for loved ones. Comes with a beautiful gift box.",
+    "price": "79.99",
+    "original_price": null,
+    "image": "",
+    "stock": 40,
+    "is_featured": true,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.512Z",
+    "updated_at": "2025-11-26T13:35:35.512Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 7,
+  "fields": {
+    "name": "Gemstone Tennis Bracelet",
+    "slug": "gemstone-tennis-bracelet",
+    "category": 3,
+    "description": "Elegant tennis bracelet featuring alternating gemstones. Perfect for special occasions.",
+    "price": "249.99",
+    "original_price": "349.99",
+    "image": "",
+    "stock": 12,
+    "is_featured": false,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.517Z",
+    "updated_at": "2025-11-26T13:35:35.517Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 8,
+  "fields": {
+    "name": "Gold Band Ring",
+    "slug": "gold-band-ring",
+    "category": 4,
+    "description": "Simple yet elegant gold band ring. Perfect for stacking or wearing alone.",
+    "price": "199.99",
+    "original_price": null,
+    "image": "",
+    "stock": 18,
+    "is_featured": false,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.526Z",
+    "updated_at": "2025-11-26T13:35:35.526Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 9,
+  "fields": {
+    "name": "Crystal Chandelier Earrings",
+    "slug": "crystal-chandelier-earrings",
+    "category": 2,
+    "description": "Glamorous crystal chandelier earrings that catch the light beautifully. Perfect for evening wear.",
+    "price": "119.99",
+    "original_price": null,
+    "image": "",
+    "stock": 15,
+    "is_featured": false,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.534Z",
+    "updated_at": "2025-11-26T13:35:35.534Z"
+  }
+},
+{
+  "model": "shop.product",
+  "pk": 10,
+  "fields": {
+    "name": "Layered Chain Necklace",
+    "slug": "layered-chain-necklace",
+    "category": 1,
+    "description": "Trendy layered chain necklace with multiple strands. On-trend and versatile.",
+    "price": "69.99",
+    "original_price": null,
+    "image": "",
+    "stock": 35,
+    "is_featured": false,
+    "is_available": true,
+    "created_at": "2025-11-26T13:35:35.536Z",
+    "updated_at": "2025-11-26T13:35:35.536Z"
+  }
+}
+]

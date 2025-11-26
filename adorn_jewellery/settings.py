@@ -76,8 +76,16 @@ WSGI_APPLICATION = 'adorn_jewellery.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'adorn_jewellery_db',  # Database name you created
+        'USER': 'root',  # Your MySQL username
+        'PASSWORD': 'lerroy',  # Your MySQL password
+        'HOST': '127.0.0.1',  # Or '127.0.0.1' / remote host
+        'PORT': '3306',  # Default MySQL port
+        'OPTIONS': {
+            'charset': 'utf8mb4',  # Supports emojis/special chars if needed
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # For compatibility with Django
+        },
     }
 }
 
