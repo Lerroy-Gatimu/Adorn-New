@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial; background: #f4f4f4; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; padding: 30px; border: 2px solid #b08d57;">
+    <h2 style="color: #b08d57;">NEW ORDER RECEIVED!</h2>
+    <p><strong>Order #{{ order.order_number }}</strong> • KES {{ order.total_amount }}</p>
+    <p><strong>Customer:</strong> {{ customer_name }} ({{ order.email }})</p>
+    <p><strong>Phone:</strong> {{ order.phone }}</p>
+    <p><strong>Shipping:</strong> {{ order.address }}, {{ order.city }}, {{ order.country }}</p>
+
+    <h3>Items:</h3>
+    <ul>
+    {% for item in items %}
+        <li>{{ item.quantity }} × {{ item.product.name }} → KES {{ item.subtotal }}</li>
+    {% endfor %}
+    </ul>
+
+    <p><strong>Notes:</strong> {{ order.notes|default:"None" }}</p>
+    <hr>
+    <p>Go to Admin → Orders to process!</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f5f0; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: white; border-radius: 10px; overflow: hidden; }
+        .header { background: #b08d57; color: white; padding: 30px; text-align: center; }
+        .content { padding: 30px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .total { background: #b08d57; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Thank You for Your Order!</h1>
+        <p>Order #{{ order.order_number }} • {{ order.created_at|date:"d M Y" }}</p>
+    </div>
+    <div class="content">
+        <p>Dear {{ customer_name }},</p>
+        <p>Your order has been confirmed! We're preparing your elegant pieces with love.</p>
+
+        <h3>Order Items</h3>
+        <table>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.quantity }} × {{ item.product.name }}</td>
+                <td align="right">KES {{ item.subtotal }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total">
+                <td><strong>Total</strong></td>
+                <td align="right"><strong>KES {{ order.total_amount }}</strong></td>
+            </tr>
+        </table>
+
+        <p><strong>Shipping to:</strong><br>
+        {{ order.address }}, {{ order.city }}, {{ order.country }}</p>
+
+        <p>We’ll notify you when it ships!</p>
+        <p>With love,<br><strong>Adorn Jewellery Team</strong></p>
+    </div>
+</div>
+</body>
+</html>

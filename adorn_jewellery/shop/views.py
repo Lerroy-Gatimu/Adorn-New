@@ -6,17 +6,19 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.conf import settings
 import json
 
-from .models import Product, Category, Order, OrderItem, ContactMessage
+from .models import Product, Category, Order, OrderItem, ContactMessage, CartItem, WishlistItem
 from .forms import SignUpForm
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-import json
 
-# ── CART API ──
+# ────────────────────────────────
+# CART & WISHLIST API (unchanged)
+# ────────────────────────────────
 @login_required
 def add_to_cart(request):
     if request.method == 'POST':
@@ -59,7 +61,6 @@ def get_cart_items(request):
     return JsonResponse({'items': data})
 
 
-# ── WISHLIST API ──
 @login_required
 def add_to_wishlist(request):
     if request.method == 'POST':
@@ -72,7 +73,8 @@ def add_to_wishlist(request):
             product=product
         )
         action = "added" if created else "removed"
-        wishlist_item.delete() if not created else None
+        if not created:
+            wishlist_item.delete()
 
         return JsonResponse({
             'success': True,
@@ -89,6 +91,9 @@ def get_wishlist_count(request):
     return JsonResponse({'wishlist_count': count})
 
 
+# ────────────────────────────────
+# MAIN VIEWS
+# ────────────────────────────────
 def home(request):
     featured_products = Product.objects.filter(is_featured=True, is_available=True)[:6]
     categories = Category.objects.all()
@@ -102,7 +107,6 @@ def shop(request):
     products = Product.objects.filter(is_available=True)
     categories = Category.objects.all()
     
-    # Filtering & sorting (unchanged)
     category_slug = request.GET.get('category')
     if category_slug:
         products = products.filter(category__slug=category_slug)
@@ -139,22 +143,22 @@ def product_detail(request, slug):
     })
 
 
-# PROTECTED VIEWS — require login
 @login_required
 def cart(request):
     return render(request, 'shop/cart.html')
+
 
 @login_required
 def wishlist(request):
     return render(request, 'shop/wishlist.html')
 
+
 @login_required
 def checkout(request):
     if request.method == 'POST':
         cart_data = json.loads(request.POST.get('cart_data', '[]'))
-        if not request.user.is_authenticated:
-            return redirect('shop:login')
 
+        # Create the order
         order = Order.objects.create(
             user=request.user,
             first_name=request.POST.get('first_name'),
@@ -169,7 +173,8 @@ def checkout(request):
             total_amount=request.POST.get('total_amount'),
             notes=request.POST.get('notes', ''),
         )
-        
+
+        # Add items to order + reduce stock
         for item in cart_data:
             product = Product.objects.get(id=item['id'])
             OrderItem.objects.create(
@@ -180,10 +185,46 @@ def checkout(request):
             )
             product.stock -= item['quantity']
             product.save()
-        
+
+        # ── SEND EMAILS ──
+        context = {
+            'order': order,
+            'items': order.items.all(),
+            'customer_name': f"{order.first_name} {order.last_name}",
+        }
+
+        # Customer confirmation email
+        html_customer = render_to_string('emails/order_confirmation_customer.html', context)
+        text_customer = strip_tags(html_customer)
+        send_mail(
+            subject=f"Order Confirmation #{order.order_number} - Adorn Jewellery",
+            message=text_customer,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[order.email],
+            html_message=html_customer,
+            fail_silently=False,
+        )
+
+        # Admin notification email
+        html_admin = render_to_string('emails/order_notification_admin.html', context)
+        text_admin = strip_tags(html_admin)
+        send_mail(
+            subject=f"NEW ORDER #{order.order_number} - KES {order.total_amount}",
+            message=text_admin,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=['yourshop@gmail.com'],  # ← CHANGE TO YOUR EMAIL
+            html_message=html_admin,
+            fail_silently=False,
+        )
+
+        # Clear the user's cart
+        request.user.cart_items.all().delete()
+
+        messages.success(request, "Order placed successfully! Check your email for confirmation.")
         return render(request, 'shop/order_confirmation.html', {'order': order})
-    
+
     return render(request, 'shop/checkout.html')
+
 
 @login_required
 def my_account(request):
@@ -191,7 +232,9 @@ def my_account(request):
     return render(request, 'shop/my_account.html', {'orders': orders})
 
 
-# AUTH VIEWS
+# ────────────────────────────────
+# AUTHENTICATION
+# ────────────────────────────────
 def user_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -227,15 +270,42 @@ def user_logout(request):
     return redirect('shop:home')
 
 
+# ────────────────────────────────
+# CONTACT FORM → EMAIL TO YOU
+# ────────────────────────────────
 def contact(request):
     if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        # Save to database
         ContactMessage.objects.create(
-            name=request.POST.get('name'),
-            email=request.POST.get('email'),
-            subject=request.POST.get('subject'),
-            message=request.POST.get('message'),
+            name=name, email=email, subject=subject, message=message
         )
-        messages.success(request, 'Thank you for contacting us! We will get back to you soon.')
+
+        # Send email to you
+        full_message = f"""
+New Contact Form Submission
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+
+Message:
+{message}
+        """
+
+        send_mail(
+            subject=f"Contact Form: {subject}",
+            message=full_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=['yourshop@gmail.com'],  # ← CHANGE TO YOUR EMAIL
+            fail_silently=False,
+        )
+
+        messages.success(request, 'Thank you! We have received your message and will reply soon.')
         return redirect('shop:contact')
     
     return render(request, 'shop/contact.html')
