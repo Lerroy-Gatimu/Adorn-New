@@ -49,3 +49,10 @@ Thumbs.db
 
 # Environment variables
 .env
+
+# .gitignore
+.env
+db.sqlite3
+__pycache__/
+*.pyc
+media/

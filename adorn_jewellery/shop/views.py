@@ -1,7 +1,6 @@
 # adorn_jewellery/shop/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
@@ -174,7 +173,7 @@ def checkout(request):
             notes=request.POST.get('notes', ''),
         )
 
-        # Add items to order + reduce stock
+        # Add items + reduce stock
         for item in cart_data:
             product = Product.objects.get(id=item['id'])
             OrderItem.objects.create(
@@ -193,7 +192,7 @@ def checkout(request):
             'customer_name': f"{order.first_name} {order.last_name}",
         }
 
-        # Customer confirmation email
+        # Customer confirmation
         html_customer = render_to_string('emails/order_confirmation_customer.html', context)
         text_customer = strip_tags(html_customer)
         send_mail(
@@ -205,19 +204,19 @@ def checkout(request):
             fail_silently=False,
         )
 
-        # Admin notification email
+        # Admin notification (now uses settings.ADMIN_EMAIL)
         html_admin = render_to_string('emails/order_notification_admin.html', context)
         text_admin = strip_tags(html_admin)
         send_mail(
             subject=f"NEW ORDER #{order.order_number} - KES {order.total_amount}",
             message=text_admin,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['yourshop@gmail.com'],  # ← CHANGE TO YOUR EMAIL
+            recipient_list=[settings.ADMIN_EMAIL],  # ← Secure via .env
             html_message=html_admin,
             fail_silently=False,
         )
 
-        # Clear the user's cart
+        # Clear cart
         request.user.cart_items.all().delete()
 
         messages.success(request, "Order placed successfully! Check your email for confirmation.")
@@ -271,7 +270,7 @@ def user_logout(request):
 
 
 # ────────────────────────────────
-# CONTACT FORM → EMAIL TO YOU
+# CONTACT FORM → EMAIL TO ADMIN (secure)
 # ────────────────────────────────
 def contact(request):
     if request.method == 'POST':
@@ -280,12 +279,12 @@ def contact(request):
         subject = request.POST.get('subject')
         message = request.POST.get('message')
 
-        # Save to database
+        # Save to DB
         ContactMessage.objects.create(
             name=name, email=email, subject=subject, message=message
         )
 
-        # Send email to you
+        # Send to admin via secure email
         full_message = f"""
 New Contact Form Submission
 
@@ -301,7 +300,7 @@ Message:
             subject=f"Contact Form: {subject}",
             message=full_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['yourshop@gmail.com'],  # ← CHANGE TO YOUR EMAIL
+            recipient_list=[settings.ADMIN_EMAIL],  # ← Now secure
             fail_silently=False,
         )
 
