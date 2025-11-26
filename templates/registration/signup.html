@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Create Account - Adorn Jewellery{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Create Your Account</h1>
+    </div>
+</section>
+
+<div class="container">
+    <div class="form-container" style="max-width: 500px; margin: 40px auto;">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+        </form>
+        <p style="text-align: center; margin-top: 20px;">
+            Already have an account? <a href="{% url 'shop:login' %}">Login here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

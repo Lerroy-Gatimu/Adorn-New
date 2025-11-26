@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,47 +9,67 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
     <header class="header">
         <div class="container">
             <nav class="navbar">
                 <div class="logo">
                     <a href="{% url 'shop:home' %}">
-                       <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50" >
+                        <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50">
                     </a>
 
                 </div>
-                
+
                 <div class="nav-links">
-                    <a href="{% url 'shop:home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
-                    <a href="{% url 'shop:shop' %}" class="nav-link {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
-                    <a href="{% url 'shop:why_choose_us' %}" class="nav-link {% if request.resolver_match.url_name == 'why_choose_us' %}active{% endif %}">Why Choose Us?</a>
-                    <a href="{% url 'shop:contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact Us</a>
+                    <a href="{% url 'shop:home' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+                    <a href="{% url 'shop:shop' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop</a>
+                    <a href="{% url 'shop:why_choose_us' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'why_choose_us' %}active{% endif %}">Why
+                        Choose Us?</a>
+                    <a href="{% url 'shop:contact' %}"
+                        class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact
+                        Us</a>
                 </div>
-                
+
                 <div class="nav-icons">
                     <a href="{% url 'shop:wishlist' %}" class="icon-link" title="Wishlist">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
                         </svg>
                         <span class="badge" id="wishlist-count">0</span>
                     </a>
                     <a href="{% url 'shop:cart' %}" class="icon-link" title="Shopping Cart">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <circle cx="9" cy="21" r="1"></circle>
                             <circle cx="20" cy="21" r="1"></circle>
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                         </svg>
                         <span class="badge" id="cart-count">0</span>
                     </a>
+
+                    {% if user.is_authenticated %}
                     <a href="{% url 'shop:my_account' %}" class="icon-link" title="My Account">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </a>
+                    <span class="user-greeting">Hi, {{ user.first_name|default:user.username }}!</span>
+                    <a href="{% url 'shop:logout' %}" class="btn-logout">Logout</a>
+                    {% else %}
+                    <a href="{% url 'shop:login' %}?next={{ request.path }}" class="btn-login">Login</a>
+                    <a href="{% url 'shop:signup' %}" class="btn-signup">Sign Up</a>
+                    {% endif %}
                 </div>
-                
+
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                     <span></span>
                     <span></span>
@@ -68,7 +89,7 @@
             {% endfor %}
         </div>
         {% endif %}
-        
+
         {% block content %}{% endblock %}
     </main>
 
@@ -78,12 +99,12 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <a href="{% url 'shop:home' %}">
-                            <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50" >
+                            <img src="{% static 'images/Adorn logo.jpg' %}" alt="Adorn Logo" width="50">
                         </a>
                     </div>
                     <p class="footer-motto">Distinctively Elegant, Affordable, Unique</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
@@ -93,7 +114,7 @@
                         <li><a href="{% url 'shop:contact' %}">Contact Us</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Account</h3>
                     <ul class="footer-links">
@@ -104,7 +125,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2024 Adorn Jewellery. All rights reserved.</p>
             </div>
@@ -116,4 +137,5 @@
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

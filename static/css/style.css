@@ -1058,3 +1058,16 @@ body {
     object-fit: cover;
     display: block;
 }
+
+.user-greeting { color: #b08d57; font-weight: 600; margin: 0 10px; }
+.btn-login, .btn-signup, .btn-logout {
+    background: #b08d57;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.btn-signup { background: #8b6f47; }
+.btn-logout { background: #d4a373; }

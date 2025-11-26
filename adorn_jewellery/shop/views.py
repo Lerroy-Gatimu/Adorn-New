@@ -1,9 +1,15 @@
+# adorn_jewellery/shop/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 import json
+
 from .models import Product, Category, Order, OrderItem, ContactMessage
+from .forms import SignUpForm
 
 
 def home(request):
@@ -19,17 +25,16 @@ def shop(request):
     products = Product.objects.filter(is_available=True)
     categories = Category.objects.all()
     
+    # Filtering & sorting (unchanged)
     category_slug = request.GET.get('category')
     if category_slug:
         products = products.filter(category__slug=category_slug)
-    
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     if min_price:
         products = products.filter(price__gte=min_price)
     if max_price:
         products = products.filter(price__lte=max_price)
-    
     sort_by = request.GET.get('sort')
     if sort_by == 'price_low':
         products = products.order_by('price')
@@ -57,19 +62,24 @@ def product_detail(request, slug):
     })
 
 
+# PROTECTED VIEWS — require login
+@login_required
 def cart(request):
     return render(request, 'shop/cart.html')
 
-
+@login_required
 def wishlist(request):
     return render(request, 'shop/wishlist.html')
 
-
+@login_required
 def checkout(request):
     if request.method == 'POST':
         cart_data = json.loads(request.POST.get('cart_data', '[]'))
-        
+        if not request.user.is_authenticated:
+            return redirect('shop:login')
+
         order = Order.objects.create(
+            user=request.user,
             first_name=request.POST.get('first_name'),
             last_name=request.POST.get('last_name'),
             email=request.POST.get('email'),
@@ -98,14 +108,46 @@ def checkout(request):
     
     return render(request, 'shop/checkout.html')
 
-
+@login_required
 def my_account(request):
-    if request.user.is_authenticated:
-        orders = Order.objects.filter(user=request.user)
-    else:
-        orders = []
-    
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'shop/my_account.html', {'orders': orders})
+
+
+# AUTH VIEWS
+def user_login(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            next_url = request.GET.get('next', 'shop:home')
+            return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'registration/login.html', {'form': form})
+
+
+def user_signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Account created successfully! Welcome to Adorn Jewellery.")
+            return redirect('shop:home')
+    else:
+        form = SignUpForm()
+    
+    return render(request, 'registration/signup.html', {'form': form})
+
+
+def user_logout(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('shop:home')
 
 
 def contact(request):
@@ -117,7 +159,7 @@ def contact(request):
             message=request.POST.get('message'),
         )
         messages.success(request, 'Thank you for contacting us! We will get back to you soon.')
-        return redirect('contact')
+        return redirect('shop:contact')
     
     return render(request, 'shop/contact.html')
 
