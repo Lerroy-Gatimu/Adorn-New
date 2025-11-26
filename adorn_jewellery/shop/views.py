@@ -10,13 +10,31 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 import json
+import sys
+
+# ─── FIX UnicodeEncodeError on Windows (MUST BE EARLY) ───
+if sys.platform.startswith('win'):
+    import smtplib
+    from email.message import EmailMessage
+
+    def _utf8_sendmail(self, from_addr, to_addrs, msg, mail_options=(), rcpt_options=()):
+        if isinstance(msg, EmailMessage):
+            msg_str = msg.as_string()
+        else:
+            msg_str = msg if isinstance(msg, str) else str(msg)
+        msg_bytes = msg_str.encode('utf-8', errors='replace')
+        return self._original_sendmail(from_addr, to_addrs, msg_bytes, mail_options, rcpt_options)
+
+    if not hasattr(smtplib.SMTP, '_original_sendmail'):
+        smtplib.SMTP._original_sendmail = smtplib.SMTP.sendmail
+        smtplib.SMTP.sendmail = _utf8_sendmail
 
 from .models import Product, Category, Order, OrderItem, ContactMessage, CartItem, WishlistItem
 from .forms import SignUpForm
 
 
 # ────────────────────────────────
-# CART & WISHLIST API (unchanged)
+# CART & WISHLIST API
 # ────────────────────────────────
 @login_required
 def add_to_cart(request):
@@ -37,7 +55,7 @@ def add_to_cart(request):
 
         return JsonResponse({'success': True, 'cart_count': request.user.cart_items.count()})
 
-    return JsonResponse({'success': False})
+    return JsonResponse({'success': False})  # ← FIXED: removed "UTS"
 
 
 @login_required
@@ -157,7 +175,6 @@ def checkout(request):
     if request.method == 'POST':
         cart_data = json.loads(request.POST.get('cart_data', '[]'))
 
-        # Create the order
         order = Order.objects.create(
             user=request.user,
             first_name=request.POST.get('first_name'),
@@ -173,7 +190,6 @@ def checkout(request):
             notes=request.POST.get('notes', ''),
         )
 
-        # Add items + reduce stock
         for item in cart_data:
             product = Product.objects.get(id=item['id'])
             OrderItem.objects.create(
@@ -185,18 +201,17 @@ def checkout(request):
             product.stock -= item['quantity']
             product.save()
 
-        # ── SEND EMAILS ──
         context = {
             'order': order,
             'items': order.items.all(),
             'customer_name': f"{order.first_name} {order.last_name}",
         }
 
-        # Customer confirmation
+        # Customer email
         html_customer = render_to_string('emails/order_confirmation_customer.html', context)
         text_customer = strip_tags(html_customer)
         send_mail(
-            subject=f"Order Confirmation #{order.order_number} - Adorn Jewellery",
+            subject=f"Order #{order.order_number} Confirmed - Adorn Jewellery",
             message=text_customer,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[order.email],
@@ -204,22 +219,20 @@ def checkout(request):
             fail_silently=False,
         )
 
-        # Admin notification (now uses settings.ADMIN_EMAIL)
+        # Admin email
         html_admin = render_to_string('emails/order_notification_admin.html', context)
         text_admin = strip_tags(html_admin)
         send_mail(
             subject=f"NEW ORDER #{order.order_number} - KES {order.total_amount}",
             message=text_admin,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_EMAIL],  # ← Secure via .env
+            recipient_list=[settings.ADMIN_EMAIL],
             html_message=html_admin,
             fail_silently=False,
         )
 
-        # Clear cart
         request.user.cart_items.all().delete()
-
-        messages.success(request, "Order placed successfully! Check your email for confirmation.")
+        messages.success(request, "Order placed successfully! Check your email.")
         return render(request, 'shop/order_confirmation.html', {'order': order})
 
     return render(request, 'shop/checkout.html')
@@ -232,7 +245,7 @@ def my_account(request):
 
 
 # ────────────────────────────────
-# AUTHENTICATION
+# AUTH & CONTACT
 # ────────────────────────────────
 def user_login(request):
     if request.method == 'POST':
@@ -245,7 +258,6 @@ def user_login(request):
             return redirect(next_url)
     else:
         form = AuthenticationForm()
-    
     return render(request, 'registration/login.html', {'form': form})
 
 
@@ -255,41 +267,32 @@ def user_signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Account created successfully! Welcome to Adorn Jewellery.")
+            messages.success(request, "Account created! Welcome to Adorn Jewellery.")
             return redirect('shop:home')
     else:
         form = SignUpForm()
-    
     return render(request, 'registration/signup.html', {'form': form})
 
 
 def user_logout(request):
     logout(request)
-    messages.success(request, "You have been logged out successfully.")
+    messages.success(request, "Logged out successfully.")
     return redirect('shop:home')
 
 
-# ────────────────────────────────
-# CONTACT FORM → EMAIL TO ADMIN (secure)
-# ────────────────────────────────
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        subject = request.POST.get('subject')
+        subject = request.POST.get('subject', 'No Subject')
         message = request.POST.get('message')
 
-        # Save to DB
-        ContactMessage.objects.create(
-            name=name, email=email, subject=subject, message=message
-        )
+        ContactMessage.objects.create(name=name, email=email, subject=subject, message=message)
 
-        # Send to admin via secure email
         full_message = f"""
-New Contact Form Submission
+New Contact Form Message
 
-Name: {name}
-Email: {email}
+From: {name} <{email}>
 Subject: {subject}
 
 Message:
@@ -297,14 +300,14 @@ Message:
         """
 
         send_mail(
-            subject=f"Contact Form: {subject}",
+            subject=f"Contact: {subject}",
             message=full_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.ADMIN_EMAIL],  # ← Now secure
+            recipient_list=[settings.ADMIN_EMAIL],
             fail_silently=False,
         )
 
-        messages.success(request, 'Thank you! We have received your message and will reply soon.')
+        messages.success(request, 'Thank you! We’ll reply soon.')
         return redirect('shop:contact')
     
     return render(request, 'shop/contact.html')
