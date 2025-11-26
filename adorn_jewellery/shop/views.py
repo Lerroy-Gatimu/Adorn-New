@@ -11,6 +11,83 @@ import json
 from .models import Product, Category, Order, OrderItem, ContactMessage
 from .forms import SignUpForm
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import json
+
+# ── CART API ──
+@login_required
+def add_to_cart(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        quantity = int(data.get('quantity', 1))
+
+        product = get_object_or_404(Product, id=product_id)
+        cart_item, created = CartItem.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'quantity': quantity}
+        )
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+
+        return JsonResponse({'success': True, 'cart_count': request.user.cart_items.count()})
+
+    return JsonResponse({'success': False})
+
+
+@login_required
+def get_cart_count(request):
+    count = request.user.cart_items.count() if request.user.is_authenticated else 0
+    return JsonResponse({'cart_count': count})
+
+
+@login_required
+def get_cart_items(request):
+    items = request.user.cart_items.select_related('product').all()
+    data = [{
+        'id': item.product.id,
+        'name': item.product.name,
+        'price': float(item.product.price),
+        'quantity': item.quantity,
+        'image': item.product.image.url if item.product.image else '',
+        'slug': item.product.slug
+    } for item in items]
+    return JsonResponse({'items': data})
+
+
+# ── WISHLIST API ──
+@login_required
+def add_to_wishlist(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        product_id = data.get('product_id')
+        product = get_object_or_404(Product, id=product_id)
+
+        wishlist_item, created = WishlistItem.objects.get_or_create(
+            user=request.user,
+            product=product
+        )
+        action = "added" if created else "removed"
+        wishlist_item.delete() if not created else None
+
+        return JsonResponse({
+            'success': True,
+            'action': action,
+            'wishlist_count': request.user.wishlist_items.count()
+        })
+
+    return JsonResponse({'success': False})
+
+
+@login_required
+def get_wishlist_count(request):
+    count = request.user.wishlist_items.count() if request.user.is_authenticated else 0
+    return JsonResponse({'wishlist_count': count})
+
 
 def home(request):
     featured_products = Product.objects.filter(is_featured=True, is_available=True)[:6]
