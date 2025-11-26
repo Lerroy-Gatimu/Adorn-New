@@ -12,7 +12,7 @@ from django.conf import settings
 import json
 import sys
 
-# ─── FIX UnicodeEncodeError on Windows (MUST BE EARLY) ───
+# ─── FIX UnicodeEncodeError on Windows (MUST stay at the very top) ───
 if sys.platform.startswith('win'):
     import smtplib
     from email.message import EmailMessage
@@ -55,7 +55,7 @@ def add_to_cart(request):
 
         return JsonResponse({'success': True, 'cart_count': request.user.cart_items.count()})
 
-    return JsonResponse({'success': False})  # ← FIXED: removed "UTS"
+    return JsonResponse({'success': False})
 
 
 @login_required
@@ -207,11 +207,11 @@ def checkout(request):
             'customer_name': f"{order.first_name} {order.last_name}",
         }
 
-        # Customer email
+        # Customer Email
         html_customer = render_to_string('emails/order_confirmation_customer.html', context)
         text_customer = strip_tags(html_customer)
         send_mail(
-            subject=f"Order #{order.order_number} Confirmed - Adorn Jewellery",
+            subject=f"Your Order #{order.order_number} is Confirmed!",
             message=text_customer,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[order.email],
@@ -219,11 +219,11 @@ def checkout(request):
             fail_silently=False,
         )
 
-        # Admin email
+        # Admin Email
         html_admin = render_to_string('emails/order_notification_admin.html', context)
         text_admin = strip_tags(html_admin)
         send_mail(
-            subject=f"NEW ORDER #{order.order_number} - KES {order.total_amount}",
+            subject=f"NEW ORDER #{order.order_number} – KES {order.total_amount:,}",
             message=text_admin,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.ADMIN_EMAIL],
@@ -284,30 +284,31 @@ def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
-        subject = request.POST.get('subject', 'No Subject')
+        subject = request.POST.get('subject') or "No Subject"
         message = request.POST.get('message')
 
         ContactMessage.objects.create(name=name, email=email, subject=subject, message=message)
 
-        full_message = f"""
-New Contact Form Message
+        context = {
+            'name': name,
+            'email': email,
+            'subject': subject,
+            'message': message,
+        }
 
-From: {name} <{email}>
-Subject: {subject}
-
-Message:
-{message}
-        """
+        html_message = render_to_string('emails/contact_message.html', context)
+        plain_message = strip_tags(html_message)
 
         send_mail(
-            subject=f"Contact: {subject}",
-            message=full_message,
+            subject=f"New Message from {name}: {subject}",
+            message=plain_message,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[settings.ADMIN_EMAIL],
+            html_message=html_message,
             fail_silently=False,
         )
 
-        messages.success(request, 'Thank you! We’ll reply soon.')
+        messages.success(request, "Thank you! Your message has been sent. We'll reply soon.")
         return redirect('shop:contact')
     
     return render(request, 'shop/contact.html')

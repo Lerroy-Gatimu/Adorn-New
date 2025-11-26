@@ -145,3 +145,5 @@ if sys.platform.startswith('win'):
     if not hasattr(smtplib.SMTP, '_original_sendmail'):
         smtplib.SMTP._original_sendmail = smtplib.SMTP.sendmail
         smtplib.SMTP.sendmail = _utf8_sendmail
+
+EMAIL_SUBJECT_PREFIX = '[Adorn Jewellery] '        

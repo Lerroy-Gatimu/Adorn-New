@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f5f0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(176, 141, 87, 0.15);
+            border: 2px solid #b08d57;
+        }
+        .header {
+            background: #b08d57;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+        .content {
+            padding: 35px;
+            line-height: 1.7;
+        }
+        .highlight {
+            background: #fff8f0;
+            padding: 18px;
+            border-left: 5px solid #b08d57;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        .label {
+            font-weight: bold;
+            color: #b08d57;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f4f4f4;
+            color: #777;
+            font-size: 14px;
+        }
+        a {
+            color: #b08d57;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>New Message from Contact Form</h1>
+    </div>
+
+    <div class="content">
+        <p><strong>Hello Adorn Team,</strong></p>
+        <p>You have received a new message from your website:</p>
+
+        <p>
+            <span class="label">From:</span> {{ name }}<br>
+            <span class="label">Email:</span> <a href="mailto:{{ email }}">{{ email }}</a><br>
+            <span class="label">Subject:</span> {{ subject }}
+        </p>
+
+        <div class="highlight">
+            <strong>Message:</strong><br><br>
+            {{ message|linebreaks }}
+        </div>
+
+        <p>Reply directly to the customer using the email above.</p>
+        <p>Have a sparkling day!</p>
+    </div>
+
+    <div class="footer">
+        Sent from Adorn Jewellery Contact Form • {{ "now"|date:"d M Y \a\t H:i" }}
+    </div>
+</div>
+
+</body>
+</html>
